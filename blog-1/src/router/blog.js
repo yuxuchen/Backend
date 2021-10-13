@@ -5,7 +5,17 @@ const {
     updateBlog,
     delBlog
 } = require('../controller/blog');
+const { login } = require('../controller/user');
 const { SuccessModel, ErrorModel } = require('../model/resModel');
+
+//unified login verify
+const loginCheck = (req) => {
+    if(!req.session.username){
+        return Promise.resolve(
+            new ErrorModel('not login!')
+        )
+    }
+}
 
 const handleBlogRouter = (req, res) =>{
     const method = req.method;
@@ -35,11 +45,12 @@ const handleBlogRouter = (req, res) =>{
 
     //new blog
     if(method === 'POST' && req.path === '/api/blog/new'){
-        // const data = newBlog(req.body)
-        // return new SuccessModel(data)
-
-        const author = 'zhang';
-        req.body.author = author;
+      const loginCheckResult = loginCheck(req)
+      if(loginCheckResult){
+          //not login
+          return loginCheck
+      }
+        req.body.author = req.session.username;
         const result = newBlog(req.body);
         return result.then(data => {
             return new SuccessModel(data)
@@ -48,6 +59,11 @@ const handleBlogRouter = (req, res) =>{
 
     //update blog
     if(method === 'POST' && req.path === '/api/blog/update'){
+        const loginCheckResult = loginCheck(req)
+        if(loginCheckResult){
+          //not login
+          return loginCheck
+      }
         const result = updateBlog(id, req.body)
         return result.then(val => {
             if(val){
@@ -60,7 +76,12 @@ const handleBlogRouter = (req, res) =>{
 
     //delete blog
     if(method === 'POST' && req.path === '/api/blog/del'){
-        const author = 'zhang';
+        const loginCheckResult = loginCheck(req)
+        if(loginCheckResult){
+          //not login
+          return loginCheck
+      }
+        const author = req.session.username;
         const result = delBlog(id, author)
         return result.then(val =>{
             if(val){
