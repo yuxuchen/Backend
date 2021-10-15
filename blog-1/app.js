@@ -1,6 +1,7 @@
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
 const {get, set} = require('./src/db/redis')
+const {access} = require('./src/utils/log')
 const {URLSearchParams} = require('url')
 
 //   // session data
@@ -43,7 +44,7 @@ const getPostData = (req) =>{
 
 const serverHandler = (req, res) => {
     res.setHeader('Content-type', 'application/json');
-    
+    access(`${req.method} -- ${req.url} -- ${req.headers['user-agent']} -- ${Date.now()}`)
     //acquire url
     const url = req.url;
     req.path = url.split('?')[0];
@@ -133,6 +134,7 @@ const serverHandler = (req, res) => {
         // return
         // }
         const blogResult = handleBlogRouter(req,res)
+        console.log('blogresult',blogResult)
         if (blogResult){
             blogResult.then(blogData =>{
                 if (needSetCookie){
