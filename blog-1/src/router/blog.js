@@ -5,10 +5,13 @@ const {
     updateBlog,
     delBlog
 } = require('../controller/blog');
+const { get } = require('../db/redis');
 const { SuccessModel, ErrorModel } = require('../model/resModel');
+
 
 //unified login verify
 const loginCheck = (req) => {
+    console.log('req.session.username',req.session.username)
     if(!req.session.username){
         return Promise.resolve(
             new ErrorModel('not login!')
@@ -23,6 +26,8 @@ const handleBlogRouter = (req, res) =>{
     // get blog list
     if(method === 'GET' && req.path === '/api/blog/list'){
         let author = req.query.author || ''
+        console.log('req.query.author',author)
+        
         const keyword = req.query.keyword || ''
         //const listData = getList(author, keyword);
         //return new SuccessModel(listData)
@@ -32,7 +37,7 @@ const handleBlogRouter = (req, res) =>{
           const loginCheckResult = loginCheck(req)
           if(loginCheckResult){
           //not login
-            return loginCheck
+            return loginCheckResult
       }
         author = req.session.username
         }
@@ -59,6 +64,7 @@ const handleBlogRouter = (req, res) =>{
           //not login
           return loginCheckResult
       }
+        
         req.body.author = req.session.username;
         const result = newBlog(req.body);
         return result.then(data => {

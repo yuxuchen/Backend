@@ -134,8 +134,8 @@ const serverHandler = (req, res) => {
         // return
         // }
         const blogResult = handleBlogRouter(req,res)
-        console.log('blogresult',blogResult)
         if (blogResult){
+
             blogResult.then(blogData =>{
                 if (needSetCookie){
                     //set cookies
