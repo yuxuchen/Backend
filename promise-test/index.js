@@ -1,4 +1,3 @@
-const { SSL_OP_EPHEMERAL_RSA } = require('constants');
 const fs = require('fs');
 const path = require('path');
 
@@ -31,7 +30,7 @@ const path = require('path');
 //use promise
 function getFileContent(fileName){
     const promise = new Promise((resolve, reject) => {
-        const fullFileName = path.resolve(__dirname, 'files', fileName)
+        const fullFileName = path.resolve(__dirname,'/files', fileName)
         fs.readFile(fullFileName, (err, data) =>{
             if(err){
                 reject(err)
@@ -45,17 +44,43 @@ function getFileContent(fileName){
     return promise
 }
 
-getFileContent('a.json')
-.then(aData => {
-    console.log('a data', aData)
-    return getFileContent(aData.next)
-})
-.then(bData =>{
-    console.log('b data', bData)
-    return getFileContent(bData.next)
-})
-.then(cData =>{
-    console.log('c data', cData)
-})
+// getFileContent('a.json')
+// .then(aData => {
+//     console.log('a data', aData)
+//     return getFileContent(aData.next)
+// })
+// .then(bData =>{
+//     console.log('b data', bData)
+//     return getFileContent(bData.next)
+// })
+// .then(cData =>{
+//     console.log('c data', cData)
+// })
 
-//
+async function readFileData() {
+        try{
+            const aData = await getFileContent('a.json')
+        console.log('a data', aData)
+        const bData = await getFileContent('b.json')
+        console.log('b data', bData)
+        const cData = await getFileContent('c.json')
+        console.log('c data', cData)
+        }catch(err){
+            console.error(err)
+        }
+        
+    
+}
+
+ readFileData()
+
+// async function readAData() {
+//     const aData = await getFileContent('a.json')
+//     return aData
+// }
+// async function test(){
+//     const aData = await readAData()
+//     console.log(aData)
+// }
+
+// test()
